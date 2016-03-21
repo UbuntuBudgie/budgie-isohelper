@@ -1,0 +1,91 @@
+
+Download Mini ISO http://mirror.internode.on.net/pub/ubuntu/ubuntu/dists/xenial/main/installer-amd64/current/images/netboot/mini.iso
+Install in VBox
+VBoxGuest bridged adapter - advanced promiscuous allow all
+2 CPUs
+Use all US settings (including mirror)
+Hostname "budgie-remix"
+Install Security updates automatically
+No software selection
+
+# Faster installs/updates (this is just for me as this mirror is blazingly fast)
+#sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+#sudo nano /etc/apt/sources.list
+#deb http://mirror.internode.on.net/pub/ubuntu/ubuntu xenial main restricted universe multiverse
+#deb http://mirror.internode.on.net/pub/ubuntu/ubuntu xenial-security main restricted universe multiverse
+#deb http://mirror.internode.on.net/pub/ubuntu/ubuntu xenial-updates main restricted universe multiverse
+#deb http://mirror.internode.on.net/pub/ubuntu/ubuntu xenial-backports main restricted universe multiverse
+
+# PPA
+sudo apt-get update
+sudo apt-get install -y software-properties-common
+
+sudo add-apt-repository -y ppa:fossfreedom/budgie-desktop
+
+# Updates
+sudo apt-get update
+sudo apt-get dist-upgrade
+
+# Budgie desktop environment
+sudo apt-get install -y budgie-desktop-environment
+# installer slideshow
+sudo apt-get -y install ubiquity-slideshow-budgie-remix
+
+# reboot and login
+
+# Host
+#cd ~;wget http://nchc.dl.sourceforge.net/project/pinguy-os/ISO_Builder/pinguybuilder_4.3-4_all.deb
+
+# get the contents of http://github.com/budgie-remix/budgie-isohelper and put on host in a full samba shared folder
+
+# on VM use files - Other Location and browse to host to copy the budgie-isohelper contents to the desktop
+
+sudo dpkg -i newping.deb
+#sudo apt-get install -f --no-install-recommends
+sudo apt-get install -f
+rm pinguybuilder_4.3-4_all.deb
+
+# N.B. newping.deb is the pinguy ISO builder with the following changes
+
+sudo su
+mkdir pinguy
+cd pinguy
+dpkg-deb -R ../pinguybuilder_4.3-4_all.deb .
+rm usr/share/applications/* # i.e. remove the .desktop files so they dont appear in the budgie menu
+cd ..
+dpkg-deb --create pinguy newpinguy.deb
+exit
+sudo chown $USER:$USER newpinguy.deb
+
+# Cleanup
+sudo apt-get autoclean -y
+sudo apt-get autoremove
+
+# run pinguy on VM
+
+sudo mkdir -p /root/.local/share
+PinguyBuilder-gtk
+
+# Pinguy Builder Options - Settings
+Actions:
+Settings:
+Username: budgie-remix
+CD Label: budgie-remix 16.04 LTS 64bit
+Filename: budgie-remix_16.04-LTS_amd64.iso
+URL: http://budgie-remix.org
+boot menu picture live cd: select Xplo-640x480.png
+boot menu picture for the installed environment: select Xplo-640x480.png
+
+Then click the DIST button
+
+# to copy is built files to the host
+
+sudo apt-get install openssh-server
+
+# get the ip address
+ifconfig
+
+# on the host
+ssh-keygen -f "/home/foss/.ssh/known_hosts" -R 192.168.1.150
+scp budgie-remix@192.168.1.150:/home/PinguyBuilder/PinguyBuilder/bu* .
+
