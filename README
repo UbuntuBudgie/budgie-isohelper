@@ -1,5 +1,16 @@
 
-Download Mini ISO http://mirror.internode.on.net/pub/ubuntu/ubuntu/dists/xenial/main/installer-amd64/current/images/netboot/mini.iso
+Download Mini ISO 
+
+mkdir 32mini
+cd 32mini
+#wget http://mirror.internode.on.net/pub/ubuntu/ubuntu/dists/xenial/main/installer-i386/current/images/netboot/mini.iso
+http://archive.ubuntu.com/ubuntu/dists/xenial/main/installer-i386/current/images/netboot/mini.iso
+cd ..
+mkdir 64mini
+cd 64mini
+wget http://mirror.internode.on.net/pub/ubuntu/ubuntu/dists/xenial/main/installer-amd64/current/images/netboot/mini.iso
+
+
 Install in VBox
 VBoxGuest bridged adapter - advanced promiscuous allow all
 2 CPUs
@@ -20,7 +31,7 @@ No software selection
 sudo apt-get update
 sudo apt-get install -y software-properties-common
 
-sudo add-apt-repository -y ppa:fossfreedom/budgie-desktop
+sudo add-apt-repository -y ppa:budgie-remix/ppa
 
 # Updates
 sudo apt-get update
@@ -40,20 +51,18 @@ sudo apt-get -y install ubiquity-slideshow-budgie-remix
 
 # on VM use files - Other Location and browse to host to copy the budgie-isohelper contents to the desktop
 
-sudo dpkg -i newping.deb
-#sudo apt-get install -f --no-install-recommends
+sudo dpkg -i ping438betastripped.deb
 sudo apt-get install -f
-rm pinguybuilder_4.3-4_all.deb
 
-# N.B. newping.deb is the pinguy ISO builder with the following changes
+# N.B. ping438*.deb is the pinguy ISO builder with the following changes
 
 sudo su
 mkdir pinguy
 cd pinguy
-dpkg-deb -R ../pinguybuilder_4.3-4_all.deb .
+dpkg-deb -R ../pinguybuilder_4.3-8_all-beta.deb .
 rm usr/share/applications/* # i.e. remove the .desktop files so they dont appear in the budgie menu
 cd ..
-dpkg-deb --create pinguy newpinguy.deb
+dpkg-deb -b pinguy newpinguy.deb
 exit
 sudo chown $USER:$USER newpinguy.deb
 
@@ -64,14 +73,17 @@ sudo apt-get autoremove
 # run pinguy on VM
 
 sudo mkdir -p /root/.local/share
+
 PinguyBuilder-gtk
 
 # Pinguy Builder Options - Settings
 Actions:
 Settings:
 Username: budgie-remix
-CD Label: budgie-remix 16.04 LTS 64bit
-Filename: budgie-remix_16.04-LTS_amd64.iso
+CD Label: budgie-remix 16.04 64bit
+CD Label: budgie-remix 16.04 32bit
+Filename: budgie-remix-16.04-amd64.iso
+Filename: budgie-remix-16.04-i386.iso
 URL: http://budgie-remix.org
 boot menu picture live cd: select Xplo-640x480.png
 boot menu picture for the installed environment: select Xplo-640x480.png
@@ -89,3 +101,16 @@ ifconfig
 ssh-keygen -f "/home/foss/.ssh/known_hosts" -R 192.168.1.150
 scp budgie-remix@192.168.1.150:/home/PinguyBuilder/PinguyBuilder/bu* .
 
+
+#sourceforge
+User jsmith seeks to put file.zip to the Rel_1 directory of his project, fooproject:
+$ sftp jsmith@frs.sourceforge.net
+Connecting to frs.sourceforge.net...
+jsmith,fooproject@frs.sourceforge.net's password: 
+sftp> cd /home/frs/project/fooproject/Rel_1
+sftp> put file.zip
+Uploading file.zip to /home/frs/project/fooproject/Rel_1/file.zip
+ws                                            100% 1573     1.5KB/s   00:00    
+sftp>
+
+Potential future issue - https://github.com/solus-project/budgie-desktop/issues/382
